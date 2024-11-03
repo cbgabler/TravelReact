@@ -7,13 +7,10 @@ const Navbar: React.FC = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContainer}>
-        <Link href="/" className={styles.navbarBrand}>
-          TravelReact
-        </Link>
         <div className={styles.navbarLinks}>
           <Link href="">Home</Link>
           <Link href="/trips">My Trips</Link>
-          <Link href="/signUp">Sign Up</Link>
+          <Link href="/signIn">Sign In</Link>
           <Link href="/profiles">Profiles</Link>
         </div>
       </div>

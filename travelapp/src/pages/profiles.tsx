@@ -1,4 +1,5 @@
 // src/pages/Profiles.tsx
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 const Profiles: React.FC = () => {
@@ -23,7 +24,13 @@ const Profiles: React.FC = () => {
           ))}
         </ul>
       )}
+        <div className='button'>
+            <Link href='/'>
+            <button type='button' className="btn btn-info">Home</button>
+            </Link>
+        </div>
     </div>
+    
   );
 };
 

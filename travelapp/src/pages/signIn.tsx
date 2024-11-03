@@ -2,7 +2,7 @@ import Link from 'next/link'
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
-const SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const router = useRouter();
@@ -48,8 +48,13 @@ const SignUp: React.FC = () => {
             <button type='button' className="btn btn-info">Home</button>
             </Link>
         </div>
+        <div className='button'>
+            <Link href='/signUp'>
+            <button type='button' className="btn btn-info">Dont have an account? Sign Up</button>
+            </Link>
+        </div>
     </div>
   );
 };
 
-export default SignUp;
+export default SignIn;
