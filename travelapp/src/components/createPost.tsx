@@ -1,67 +1,64 @@
 // components/CreatePost.tsx
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { db, storage } from '../firebaseConfig';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Post } from '../types';
 
-const CreatePost: React.FC = () => {
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [image, setImage] = useState<File | null>(null);
+import React, { useState } from 'react';
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+interface CreatePostProps {
+    onPostCreated: (title: string, content: string) => void; // Callback for post creation
+}
 
-    let imageURL = '';
+const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const [error, setError] = useState('');
 
-    if (image) {
-      const imageRef = ref(storage, `images/${image.name}`);
-      await uploadBytes(imageRef, image);
-      imageURL = await getDownloadURL(imageRef);
-    }
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(''); // Clear previous errors
 
-    const newPost: Omit<Post, 'id'> = {
-      title,
-      description,
-      imageURL,
-      createdAt: new Date()
+        if (!title || !content) {
+            setError('Please provide a title and content.');
+            return;
+        }
+
+        // Call the onPostCreated prop to handle the post creation
+        onPostCreated(title, content);
+
+        // Clear form fields
+        setTitle('');
+        setContent('');
     };
-    await addDoc(collection(db, 'posts'), newPost);
 
-    setTitle('');
-    setDescription('');
-    setImage(null);
-  };
-
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setImage(e.target.files[0]);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="p-4 border rounded-lg shadow-md mb-6">
-      <h2 className="text-xl font-bold mb-4">Create a New Post</h2>
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full p-2 mb-2 border rounded"
-      />
-      <textarea
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="w-full p-2 mb-2 border rounded"
-      ></textarea>
-      <input type="file" onChange={handleImageChange} />
-      <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded mt-4">
-        Post
-      </button>
-    </form>
-  );
+    return (
+        <div className="create-post-container">
+            <h2 className="text-xl font-bold mb-2">Create New Post</h2>
+            {error && <p className="text-red-500">{error}</p>}
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label htmlFor="title" className="block">Title:</label>
+                    <input
+                        type="text"
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="border rounded w-full p-2"
+                        required
+                    />
+                </div>
+                <div>
+                    <label htmlFor="content" className="block">Content:</label>
+                    <textarea
+                        id="content"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        className="border rounded w-full p-2"
+                        rows={4}
+                        required
+                    />
+                </div>
+                <button type="submit" className="bg-blue-500 text-white rounded p-2">Create Post</button>
+            </form>
+        </div>
+    );
 };
 
 export default CreatePost;

@@ -1,9 +1,8 @@
-// src/pages/Profiles.tsx
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 const Profiles: React.FC = () => {
-  const [users, setUsers] = useState<{ name: string; email: string }[]>([]);
+  const [users, setUsers] = useState<{ name: string; username: string }[]>([]);
 
   useEffect(() => {
     const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
@@ -19,14 +18,14 @@ const Profiles: React.FC = () => {
         <ul>
           {users.map((user, index) => (
             <li key={index}>
-              {user.name} - {user.email}
+              {user.name} - {user.username}
             </li>
           ))}
         </ul>
       )}
         <div className='button'>
             <Link href='/'>
-            <button type='button' className="btn btn-info">Home</button>
+            <button type='button' className="btn btn-info">Back</button>
             </Link>
         </div>
     </div>

@@ -1,58 +1,72 @@
-import Link from 'next/link'
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
 const SignIn: React.FC = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newUser = { name, email };
+
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrUsername);
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    router.push('/profiles');
+
+    // Check if a user with the provided email or username exists in local storage
+    const user = users.find((u: { email: string | null; username: string | null; password: string }) =>
+      (isEmail ? u.email === emailOrUsername : u.username === emailOrUsername)
+    );
+
+    if (user && user.password === password) {
+      // User exists and password matches
+      router.push('/profiles');
+    } else {
+      // User does not exist or password is incorrect
+      setError('User not found or password is incorrect.');
+    }
   };
 
   return (
     <div className="signup-container">
-      <h1>Sign Up</h1>
+      <h1>Sign In</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name">Name:</label>
+          <label htmlFor="emailOrUsername">Username or Email:</label>
           <input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            id="emailOrUsername"
+            value={emailOrUsername}
+            onChange={(e) => setEmailOrUsername(e.target.value)}
             required
           />
         </div>
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="password">Password:</label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <button type="submit">Sign Up</button>
+        <button type="submit">Sign In</button>
       </form>
 
-      <div className='button'>
-            <Link href='/'>
-            <button type='button' className="btn btn-info">Home</button>
-            </Link>
-        </div>
-        <div className='button'>
-            <Link href='/signUp'>
-            <button type='button' className="btn btn-info">Dont have an account? Sign Up</button>
-            </Link>
-        </div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <div className="button">
+        <Link href="/">
+          <button type="button" className="btn btn-info">Back</button>
+        </Link>
+      </div>
+      <div className="button">
+        <Link href="/signUp">
+          <button type="button" className="btn btn-info">Don't have an account? Sign Up</button>
+        </Link>
+      </div>
     </div>
   );
 };
